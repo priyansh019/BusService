@@ -1,0 +1,6 @@
+{
+  "name": "Bus Discovery",
+  "description": "Unified Bus Discovery & Journey Planner with offline-first routing, community verification, and honest fare calculations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

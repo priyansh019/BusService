@@ -1,0 +1,20 @@
+# Acceptance Matrix: Acceptance Scenarios P1 to P14
+
+All criteria from Report §16 and Master Build Prompt Acceptance Scenarios have automated test coverage and dedicated in-app verification routines.
+
+| ID | Feature / Test Scenario | Description | Automated Test Location | Status |
+|---|---|---|---|---|
+| **P1** | Direct Journey Query | Plan journey from Pari Chowk (S1) to Ghaziabad Old Bus Stand (S5) at 08:00 AM on weekday. Finds direct lines (L1, X1). | `BusDiscoveryPlannerTest.testP1_DirectJourneySearch()` | **PASS** |
+| **P2** | Multi-Leg Transfer Journey | Plan journey from Pari Chowk (S1) to Pilkhuwa (S11). Finds valid transfer journeys (e.g. L1/X1 to Ghaziabad + X2 to Pilkhuwa) with ≥5 min transfer buffer. | `BusDiscoveryPlannerTest.testP2_TransferJourneySearch()` | **PASS** |
+| **P3** | Pass-Through & Boarding Honesty | Masuri (S8) on route X1 has `pickup_type = 1` (discharge only). Journey search directly from Masuri to Hapur excludes X1 boarding and offers X2 (which allows boarding). | `BusDiscoveryPlannerTest.testP3_BoardingRestrictionHonesty()` | **PASS** |
+| **P4** | Data Honesty on Missing Fares | For routes/stages without a defined fare rule, returns "Fare not available (Stage fare unconfirmed)" rather than fabricating ₹0 or ₹20. | `BusDiscoveryPlannerTest.testP4_MissingFareHonesty()` | **PASS** |
+| **P5** | Savings Calculator Precision | Verifies one-way, round-trip, and monthly formula `(Alternative - Bus) * 2 * 22 days`. Example: ₹25 bus vs ₹50 auto over 22 days = ₹1,100. Refuses calculation if bus fare is unknown. | `BusDiscoveryPlannerTest.testP5_SavingsCalculatorAccuracy()` | **PASS** |
+| **P6** | Calendar Exception Handling | October 24, 2026 configured as Diwali holiday exception (`exception_type = 2`). Standard weekday services excluded; holiday-specific services active. | `BusDiscoveryPlannerTest.testP6_CalendarExceptionHandling()` | **PASS** |
+| **P7** | Crowd Contribution Rate Limiting | Contributor submissions rate-limited to 5 per hour per user. Exceeding limit throws `ValidationException("Rate limit exceeded")`. | `ValidatorsTest.testRateLimiting()` | **PASS** |
+| **P8** | Telemetry Bounding Box & Freshness | GPS positions outside India bounding box (6.5°N–35.5°N, 68°E–97.5°E) or timestamps >90s in the future/past are flagged or rejected. Age >90s marked STALE. | `ValidatorsTest.testGpsBoundingBox()` | **PASS** |
+| **P9** | Driver Telemetry Broadcast & Consent | Driver cannot transmit location without explicit passenger privacy consent toggle enabled. Disabling consent ceases broadcasts and enables instant purge. | `BusDiscoveryPlannerTest.testP9_DriverConsentAndTelemetry()` | **PASS** |
+| **P10** | Moderator Approval & Auto-Publication | Moderator approves pending community route `D1` (Dasna–Dhaulana). Route is published to official Room tables with `COMMUNITY_APPROVED` provenance and becomes immediately searchable. | `BusDiscoveryPlannerTest.testP10_ModeratorApprovalPublication()` | **PASS** |
+| **P11** | Operator Isolation & Audit Logging | Operator of `OP_UPSRTC` blocked from modifying routes owned by other operators (`OP_DTC`). Generates `SECURITY_VIOLATION` audit log entry. | `PermissionPolicyTest.testCrossTenantOperatorModificationBlocked()` | **PASS** |
+| **P12** | Admin Metric Aggregation | System health and analytics dashboard (§18.1) computes total searches, successful plans, fallback rate, community contributions, and active alerts accurately. | `BusDiscoveryPlannerTest.testP12_AdminAnalyticsAggregation()` | **PASS** |
+| **P13** | Offline Reliability | App boots, loads pre-seeded Room SQLite database, plans journeys, renders schematic maps, and processes submissions with zero internet connectivity. | `BusDiscoveryPlannerTest.testP13_OfflineDatabaseBootAndRead()` | **PASS** |
+| **P14** | One-Tap Demo Reset | Admin reset restores database to pristine baseline seed state (14 stops, 5 routes, 4 pending submissions) in a single atomic Room transaction. | `BusDiscoveryPlannerTest.testP14_DemoResetRestoresPristineState()` | **PASS** |
